@@ -1,1 +1,7 @@
 streamlit
+yfinance
+scikit-learn
+tensorflow
+GoogleNews
+numpy
+nltk
