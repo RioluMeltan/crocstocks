@@ -34,6 +34,6 @@ for stock in streamlit.session_state.tracked_stocks:
         diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
         color = 'green' if diff >= 0 else 'red'
         change = diff * 100
-        streamlit.sidebar.markdown(f"{stock} <span style = 'color: {color}; font-weight:bold;'>({change:.3f}%)</span>", unsafe_allow_html = True)
+        streamlit.sidebar.markdown(f"<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color}; font-weight: bold;'>Change: {change:.2f}%</span></div>", unsafe_allow_html = True)
     else: 
-        streamlit.sidebar.markdown(f"{stock} <span style = 'color: gray;'>(no data)</span>", unsafe_allow_html = True)
+        streamlit.sidebar.markdown(f"{stock} <span style = '<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray; font-weight: bold;'>Change: N/A</span></div>", unsafe_allow_html = True)
