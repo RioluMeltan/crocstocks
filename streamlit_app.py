@@ -33,9 +33,9 @@ for stock in streamlit.session_state.tracked_stocks:
         color = 'green' if diff >= 0 else 'red'
         change = diff * 100
         if diff >= 0: 
-            streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>+{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}(+{change:.2f})%</span></div>", unsafe_allow_html = True)
+            streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>+{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}(+{change:.2f}%)</span></div>", unsafe_allow_html = True)
         else: 
-            streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({change:.2f})%</span></div>", unsafe_allow_html = True)
+            streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({change:.2f}%)</span></div>", unsafe_allow_html = True)
     else: 
         streamlit.sidebar.markdown(f"{stock} <span style = '<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>No change amount available</span></div>", unsafe_allow_html = True)
 
