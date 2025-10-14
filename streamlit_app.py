@@ -39,28 +39,14 @@ for stock in streamlit.session_state.tracked_stocks:
 streamlit.title('Your Watchlist Performance')
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f"{stock} - Historical Data")
-    data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    selected_range = streamlit.radio('Select time range', list({'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180}.keys()), horizontal = True)
+    data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180}[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    
+    fig = plotly.graph_objs.Figure()
     if not data.empty:
         streamlit.line_chart(data['Close'])
     else:
         streamlit.warning(f"No data available for {stock}")
-    if streamlit.button('5D'): 
-        if not data.empty:
-            streamlit.line_chart(data['Close'][359:364])
-        else:
-            streamlit.warning(f"No data available for {stock}")
-    if streamlit.button('1M'): 
-        if not data.empty:
-            streamlit.line_chart(data['Close'][334:364])
-        else:
-            streamlit.warning(f"No data available for {stock}")
-    if streamlit.button('6M'): 
-        if not data.empty:
-            streamlit.line_chart(data['Close'][184:364])
-        else:
-            streamlit.warning(f"No data available for {stock}")
-    if streamlit.button('1Y'): 
-        if not data.empty:
-            streamlit.line_chart(data['Close'])
-        else:
-            streamlit.warning(f"No data available for {stock}")
+    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mod = 'lines', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
+    fig.update_layout(title = f'{stock} Closing Price', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
+    streamlit.plotly_chart(fig, use_container_width = True)
