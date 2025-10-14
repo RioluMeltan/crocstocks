@@ -29,5 +29,10 @@ if streamlit.sidebar.button('Add to Watchlist'):
 streamlit.sidebar.subheader('Your Watchlist')
 for stock in streamlit.session_state.tracked_stocks: 
     close_diff = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = 1), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-    diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
-    streamlit.sidebar.write(f'{stock} ({diff})')
+    if not close_diff.empty: 
+        diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
+        color = 'green' if diff >= 0 else 'red'
+        change = diff * 100
+        streamlit.sidebar.markdown(f"{stock} <span style = 'color:{color}'; font-weight:bold;'>({change:.2f}%)</span>", unsafe_allow_html = True)
+    else: 
+        streamlit.sidebar.markdown(f"{stock} <span style='color:gray;'>(no data)</span>", unsafe_allow_html = True)
