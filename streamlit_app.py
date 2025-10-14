@@ -14,8 +14,6 @@ if 'tracked_stocks' not in streamlit.session_state:
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
 ticker = streamlit.sidebar.text_input('Enter Stock Ticker(default AAPL)', value = 'AAPL')
-start_date = streamlit.sidebar.date_input('Start Date(default one year)', value = datetime.datetime.now() - datetime.timedelta(days = 365))
-end_date = streamlit.sidebar.date_input('End Date(default one year)', value = datetime.datetime.now())
 
 if streamlit.sidebar.button('Add to Watchlist'): 
     if len(ticker.upper().strip()) == 0: 
