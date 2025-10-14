@@ -45,5 +45,5 @@ for stock in streamlit.session_state.tracked_stocks:
     
     fig = plotly.graph_objs.Figure()
     fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mode = 'lines', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
-    fig.update_layout(title = f'{stock} Closing Price', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
+    fig.update_layout(title = f'{stock} Historical Closing Prices in the {selections[selected_range]}', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
     streamlit.plotly_chart(fig, use_container_width = True)
