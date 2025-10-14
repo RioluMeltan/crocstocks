@@ -44,7 +44,7 @@ for stock in streamlit.session_state.tracked_stocks:
     data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     
     fig = plotly.graph_objs.Figure()
-    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mode = 'lines+markers', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
+    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'].values, mode = 'lines+markers', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
     y_min = float(data['Close'].dropna().min())
     y_max = float(data['Close'].dropna().max())
     padding = max((y_max - y_min) * 3, 1)
