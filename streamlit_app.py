@@ -58,7 +58,7 @@ fig.add_trace(plotly.graph_objs.Scatter(
     y=data['Close'],
     mode='lines',
     name='AAPL',
-    line=dict(color='blue', width=2, dash=streamlit.session_state.line_style)
+    line=dict(color='blue', width=2)
 ))
 fig.update_layout(title="AAPL Closing Price", xaxis_title="Date", yaxis_title="Price")
 
