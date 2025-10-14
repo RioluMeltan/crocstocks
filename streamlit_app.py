@@ -43,3 +43,23 @@ for stock in streamlit.session_state.tracked_stocks:
         streamlit.line_chart(data['Close'])
     else:
         streamlit.warning(f"No data available for {stock}")
+    if streamlit.button('5D'): 
+        if not data.empty:
+            streamlit.line_chart(data['Close'][360:365])
+        else:
+            streamlit.warning(f"No data available for {stock}")
+    if streamlit.button('1M'): 
+        if not data.empty:
+            streamlit.line_chart(data['Close'][335:365])
+        else:
+            streamlit.warning(f"No data available for {stock}")
+    if streamlit.button('6M'): 
+        if not data.empty:
+            streamlit.line_chart(data['Close'][185:365])
+        else:
+            streamlit.warning(f"No data available for {stock}")
+    if streamlit.button('1Y'): 
+        if not data.empty:
+            streamlit.line_chart(data['Close'])
+        else:
+            streamlit.warning(f"No data available for {stock}")
