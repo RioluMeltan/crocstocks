@@ -22,3 +22,7 @@ if streamlit.sidebar.button('Add to Watchlist'):
         streamlit.sidebar.success(f'You have added {ticker.upper()} to your watchlist!')
     elif ticker.upper() in streamlit.session_state.tracked_stocks:
         streamlit.sidebar.warning(f"{ticker.upper()} is already in your watchlist.")
+
+streamlit.sidebar.subheader('Your Watchlist')
+for stock in streamlit.session_state.tracked_stocks:
+    streamlit.sidebar.write(f'{stock}')
