@@ -11,6 +11,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
+radio_range = {}
 
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
@@ -40,7 +41,7 @@ streamlit.title('Your Watchlist Performance')
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f"{stock} - Historical Data")
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
-    selected_range = streamlit.radio('Select time range: ', list(selections.keys()), horizontal = True)
+    radio_range[stock] = streamlit.radio('Select time range: ', list(selections.keys()), horizontal = True)
     data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     
     fig = plotly.graph_objs.Figure()
