@@ -39,10 +39,11 @@ for stock in streamlit.session_state.tracked_stocks:
 streamlit.title('Your Watchlist Performance')
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f"{stock} - Historical Data")
-    selected_range = streamlit.radio('Select time range', list({'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180}.keys()), horizontal = True)
-    data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180}[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
+    selected_range = streamlit.radio('Select time range: ', list(selections.keys()), horizontal = True)
+    data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     
     fig = plotly.graph_objs.Figure()
-    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mod = 'lines', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
+    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mode = 'lines', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
     fig.update_layout(title = f'{stock} Closing Price', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
     streamlit.plotly_chart(fig, use_container_width = True)
