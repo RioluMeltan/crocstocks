@@ -14,8 +14,8 @@ if 'tracked_stocks' not in streamlit.session_state:
 
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
-ticker = streamlit.sidebar.text_input('Enter Stock Ticker')
 
+ticker = streamlit.sidebar.text_input('Enter Stock Ticker')
 if streamlit.sidebar.button('Add to Watchlist'): 
     if len(ticker.upper().strip()) == 0: 
         streamlit.sidebar.error('Please enter a valid stock ticker.')
@@ -41,7 +41,7 @@ for stock in streamlit.session_state.tracked_stocks:
     else: 
         streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
 
-streamlit.title('Your Watchlist Performance')
+streamlit.title("Your Watchlist's Performance")
 
 @streamlit.cache_data
 def get_long_data(ticker): 
