@@ -34,3 +34,12 @@ for stock in streamlit.session_state.tracked_stocks:
         streamlit.sidebar.markdown(f"<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color}; font-weight: bold;'>Change: {change:.2f}%</span></div>", unsafe_allow_html = True)
     else: 
         streamlit.sidebar.markdown(f"{stock} <span style = '<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray; font-weight: bold;'>Change: N/A</span></div>", unsafe_allow_html = True)
+
+streamlit.title('Your Watchlist Performance')
+for stock in streamlit.session_state.tracked_stocks: 
+    streamlit.subheader(f"{stock} - Historical Data")
+    data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    if not data.empty:
+        streamlit.line_chart(data['Close'])
+    else:
+        streamlit.warning(f"No data available for {stock}")
