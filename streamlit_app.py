@@ -32,18 +32,35 @@ for stock in streamlit.session_state.tracked_stocks:
         diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
         color = 'green' if diff >= 0 else 'red'
         change = diff * 100
-        streamlit.sidebar.markdown(f"<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color}; font-weight: bold;'>Change: {change:.2f}%</span></div>", unsafe_allow_html = True)
+        streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color}; font-weight: bold;'>Change: {change:.2f}%</span></div>", unsafe_allow_html = True)
     else: 
-        streamlit.sidebar.markdown(f"{stock} <span style = '<div style = 'border:1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray; font-weight: bold;'>Change: N/A</span></div>", unsafe_allow_html = True)
+        streamlit.sidebar.markdown(f"{stock} <span style = '<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray; font-weight: bold;'>Change: N/A</span></div>", unsafe_allow_html = True)
 
 streamlit.title('Your Watchlist Performance')
 for stock in streamlit.session_state.tracked_stocks: 
-    streamlit.subheader(f"{stock} - Historical Data")
+    streamlit.subheader(f'{stock} - Historical Data')
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
     selected_range = streamlit.radio('Select time range: ', list(selections.keys()), horizontal = True, key = f'range_{stock}')
     data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     
     fig = plotly.graph_objs.Figure()
     fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'], mode = 'lines', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
-    fig.update_layout(title = f'{stock} Historical Closing Prices in the {selections[selected_range]}', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
+    fig.update_layout(title = f'{stock} Historical Closing Prices in the {selected_range}', xaxis_title = 'Date', yaxis_title = "Price (USD)", template = 'plotly_dark', showlegend = True, height = 400)
     streamlit.plotly_chart(fig, use_container_width = True)
+
+# Download data
+data = yfinance.download("AAPL", period="1mo", interval="1d", auto_adjust=True)
+
+# Create Plotly chart
+fig = plotly.graph_objs.Figure()
+fig.add_trace(plotly.graph_objs.Scatter(
+    x=data.index,
+    y=data['Close'],
+    mode='lines',
+    name='AAPL',
+    line=dict(color='blue', width=2, dash=streamlit.session_state.line_style)
+))
+fig.update_layout(title="AAPL Closing Price", xaxis_title="Date", yaxis_title="Price")
+
+# Display chart
+streamlit.plotly_chart(fig, use_container_width=True)
