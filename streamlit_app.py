@@ -40,6 +40,6 @@ streamlit.title('Your Watchlist Performance')
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
-    selected_range = streamlit.radio('Select time range: ', list(selections.keys()), index = 4, horizontal = True, key = f'range_{stock}')
+    selected_range = streamlit.radio('Select time range: ', list(selections.keys()), index = 3, horizontal = True, key = f'range_{stock}')
     data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     streamlit.line_chart(data['Close'])
