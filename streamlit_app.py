@@ -42,13 +42,4 @@ for stock in streamlit.session_state.tracked_stocks:
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
     selected_range = streamlit.radio('Select time range: ', list(selections.keys()), horizontal = True, key = f'range_{stock}')
     data = yfinance.download(stock, start = datetime.datetime.now() - datetime.timedelta(days = selections[selected_range]), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-    
     streamlit.line_chart(data['Close'])
-
-    fig = plotly.graph_objs.Figure()
-    fig.add_trace(plotly.graph_objs.Scatter(x = data.index, y = data['Close'].values, mode = 'lines+markers', name = stock, line = dict(color = 'blue', width = 2, dash = 'solid')))
-    y_min = float(data['Close'].dropna().min())
-    y_max = float(data['Close'].dropna().max())
-    padding = max((y_max - y_min) * 3, 1)
-    fig.update_layout(title = f'{stock} Historical Closing Prices in the {selected_range}', xaxis_title = 'Date', yaxis_title = "Price (USD)", yaxis = dict(range = [y_min - padding, y_max + padding]), template = 'plotly_dark', height = 500)
-    streamlit.plotly_chart(fig, use_container_width = True)
