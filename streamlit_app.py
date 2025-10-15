@@ -21,7 +21,7 @@ if streamlit.sidebar.button('Add to Watchlist'):
         stock_err = streamlit.sidebar.empty()
         stock_err.error('Please enter a valid stock ticker.')
         time.sleep(3)
-        stock_err.empty
+        stock_err.empty()
     elif ticker.upper() in streamlit.session_state.tracked_stocks: 
         stock_warn = streamlit.sidebar.warning(f"{ticker.upper()} is already in your watchlist.")
     elif ticker.upper() not in streamlit.session_state.tracked_stocks: 
