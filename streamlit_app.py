@@ -18,13 +18,15 @@ streamlit.sidebar.header('Add Stocks to Watchlist')
 ticker = streamlit.sidebar.text_input('Enter Stock Ticker')
 if streamlit.sidebar.button('Add to Watchlist'): 
     if len(ticker.upper().strip()) == 0: 
-        stock_err = streamlit.sidebar.error('Please enter a valid stock ticker.')
+        stock_err = streamlit.empty()
+        stock_err.sidebar.error('Please enter a valid stock ticker.')
+        time.sleep(3)
+        stock_err.empty
     elif ticker.upper() in streamlit.session_state.tracked_stocks: 
         stock_warn = streamlit.sidebar.warning(f"{ticker.upper()} is already in your watchlist.")
     elif ticker.upper() not in streamlit.session_state.tracked_stocks: 
         streamlit.session_state.tracked_stocks.append(ticker.upper())
         stock_succ = streamlit.sidebar.success(f'You have added {ticker.upper()} to your watchlist!')
-        streamlit.toast('success test')
 
 streamlit.sidebar.subheader('Your Watchlist')
 if len(streamlit.session_state.tracked_stocks) == 0: 
