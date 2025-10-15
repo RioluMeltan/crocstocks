@@ -26,6 +26,8 @@ if streamlit.sidebar.button('Add to Watchlist'):
         streamlit.sidebar.success(f'You have added {ticker.upper()} to your watchlist!')
 
 streamlit.sidebar.subheader('Your Watchlist')
+if len(streamlit.session_state.tracked_stocks) == 0: 
+    streamlit.sidebar.caption('Your watchlist is empty.')
 
 @streamlit.cache_data
 def get_change_data(ticker): 
@@ -42,6 +44,8 @@ for stock in streamlit.session_state.tracked_stocks:
         streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
 
 streamlit.title("Your Watchlist's Performance")
+if len(streamlit.session_state.tracked_stocks) == 0: 
+    streamlit.caption('Your watchlist is empty.')
 
 @streamlit.cache_data
 def get_long_data(ticker, days): 
