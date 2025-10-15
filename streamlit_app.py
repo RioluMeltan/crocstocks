@@ -43,6 +43,7 @@ if 'stock_succ_time' in streamlit.session_state:
         streamlit.sidebar.success(f'You have added {ticker.upper()} to your watchlist!')
     else: 
         streamlit.session_state.stock_succ.empty()
+        print('Checkpoint success')
 
 streamlit.sidebar.subheader('Your Watchlist')
 if len(streamlit.session_state.tracked_stocks) == 0: 
