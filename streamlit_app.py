@@ -9,10 +9,8 @@ import GoogleNews
 import plotly
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-streamlit.session_state.tracked_stocks = []
-stock_err = streamlit.sidebar.empty()
-stock_warn = streamlit.sidebar.empty()
-stock_succ = streamlit.sidebar.empty()
+if 'tracked_stocks' not in streamlit.session_state:
+    streamlit.session_state.tracked_stocks = []
 
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
@@ -20,29 +18,12 @@ streamlit.sidebar.header('Add Stocks to Watchlist')
 ticker = streamlit.sidebar.text_input('Enter Stock Ticker')
 if streamlit.sidebar.button('Add to Watchlist'): 
     if len(ticker.upper().strip()) == 0: 
-        streamlit.session_state.stock_err_time = time.time()
+        streamlit.sidebar.error('Please enter a valid stock ticker.')
     elif ticker.upper() in streamlit.session_state.tracked_stocks: 
-        streamlit.session_state.stock_warn_time = time.time()
+        streamlit.sidebar.warning(f"{ticker.upper()} is already in your watchlist.")
     elif ticker.upper() not in streamlit.session_state.tracked_stocks: 
         streamlit.session_state.tracked_stocks.append(ticker.upper())
-        streamlit.session_state.stock_succ_time = time.time()
-
-if 'stock_err_time' in streamlit.session_state: 
-    if time.time() - streamlit.session_state.stock_err_time < 3: 
-        stock_err.error('Please enter a valid stock ticker.')
-    else: 
-        stock_err.empty()
-if 'stock_warn_time' in streamlit.session_state: 
-    if time.time() - streamlit.session_state.stock_warn_time < 3: 
-        stock_warn.warning(f"{ticker.upper()} is already in your watchlist.")
-    else: 
-        stock_warn.empty()
-if 'stock_succ_time' in streamlit.session_state: 
-    if time.time() - streamlit.session_state.stock_succ_time < 3: 
-        stock_succ.success(f'You have added {ticker.upper()} to your watchlist!')
-    else: 
-        stock_succ.empty()
-        print('Checkpoint success')
+        streamlit.sidebar.success(f'You have added {ticker.upper()} to your watchlist!')
 
 streamlit.sidebar.subheader('Your Watchlist')
 if len(streamlit.session_state.tracked_stocks) == 0: 
