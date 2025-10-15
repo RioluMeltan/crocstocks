@@ -6,7 +6,6 @@ import tensorflow
 import numpy
 import time
 import GoogleNews
-import plotly
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 if 'tracked_stocks' not in streamlit.session_state:
