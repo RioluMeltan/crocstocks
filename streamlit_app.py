@@ -52,7 +52,7 @@ def get_long_data(ticker, days):
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
-    selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365}
+    selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365, 'All Time': 999999}
     selected_range = streamlit.radio('Select time range: ', list(selections.keys()), index = 3, horizontal = True, key = f'range_{stock}')
     data = get_long_data(stock, selections[selected_range])
     streamlit.line_chart(data['Close'])
