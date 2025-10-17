@@ -52,7 +52,7 @@ def get_long_data(ticker, days):
     if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
         return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     else: 
-        return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '30d', progress = False, auto_adjust = True)
+        return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
     
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
