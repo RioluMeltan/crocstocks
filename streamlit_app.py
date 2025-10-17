@@ -54,7 +54,7 @@ def get_long_data(ticker, days):
             return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
         else: 
             return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
-    elif days = 1825: 
+    elif days == 1825: 
         if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
             return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
         else: 
