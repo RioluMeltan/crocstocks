@@ -72,5 +72,5 @@ for stock in streamlit.session_state.tracked_stocks:
     try: 
         data = get_long_data(stock, selections[selected_range])
         streamlit.line_chart(data['Close'])
-    except Exception as ex: 
-        streamlit.warning(ex)
+    except Exception: 
+        streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
