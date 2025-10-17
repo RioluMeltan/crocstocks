@@ -49,14 +49,25 @@ if len(streamlit.session_state.tracked_stocks) == 0:
 @streamlit.cache_data
 def get_long_data(ticker, days): 
     ipo_date = yfinance.Ticker(ticker).history(period = 'max').index[0].to_pydatetime()
-    if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
-        return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    if days == 99999: 
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
+    elif days = 1825: 
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
     else: 
-        return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
-    
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+ 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
-    selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365, 'All Time': 99999}
+    selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365, 'Previous 5 Years': 1825, 'All Time': 99999}
     selected_range = streamlit.radio('Select time range: ', list(selections.keys()), index = 4, horizontal = True, key = f'range_{stock}')
     data = get_long_data(stock, selections[selected_range])
     streamlit.line_chart(data['Close'])
