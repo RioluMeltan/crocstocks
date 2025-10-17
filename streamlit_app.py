@@ -48,7 +48,7 @@ if len(streamlit.session_state.tracked_stocks) == 0:
 
 @streamlit.cache_data
 def get_long_data(ticker, days): 
-    ipo_date = datetime.datetime.strptime(yfinance.Ticker(ticker).info.get('ipodate', 'N/A'), '%Y-%m-%d')
+    ipo_date = datetime.datetime.strptime(yfinance.Ticker(ticker).info.get('ipoDate', 'N/A'), '%Y-%m-%d')
     if ipo_date < datetime.timedelta(days = days): 
         return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     else: 
