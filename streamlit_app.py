@@ -202,9 +202,9 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
-                if streamlit.button('Quick Analysis'): 
+                if streamlit.button('Quick Analysis', key = stock): 
                     quick(fundamental_check, sentiment_check, historical_check, stock)
-                if streamlit.button('Comprehensive Analysis'): 
+                if streamlit.button('Comprehensive Analysis', key = stock): 
                     print('comprehensive')
     except Exception as exc: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
