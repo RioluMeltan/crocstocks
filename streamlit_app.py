@@ -165,7 +165,7 @@ def historical_analysis(symbol, _prog_bar, total, curr):
     print(f"Historical analysis took {time.perf_counter() - start} seconds")
     return float(predicted_stock_price[0][0])
 
-@streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
+@streamlit.dialog('Quick Analysis Results', width = 'medium')
 def quick(f_true, s_true, h_true, stock): 
     progress_struct = streamlit.empty()
     progress = progress_struct.progress(0)
@@ -204,7 +204,8 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
-                streamlit.button("Quick Analysis", on_click = lambda: quick(fundamental_check, sentiment_check, historical_check, stock))
+                if streamlit.button('Quick Analysis'): 
+                    quick(fundamental_check, sentiment_check, historical_check, stock)
                 if streamlit.button('Comprehensive Analysis'): 
                     print('comprehensive')
     except Exception as exc: 
