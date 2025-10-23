@@ -179,7 +179,8 @@ def quick(f_true, s_true, h_true, stock):
     progress.progress(100)
     progress_struct.empty()
     streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}\n{stock} Market Sentiment: {s_results:.4f}\n{stock} Projected Next Day Close: US${h_results:.4f}')
-    if streamlit.button('Close'):
+    if streamlit.button('Close'): 
+        streamlit.session_state.quick_open = False
         streamlit.rerun()
 
 for stock in streamlit.session_state.tracked_stocks: 
@@ -199,8 +200,12 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
-                streamlit.button('Quick Analysis', on_click = lambda: quick(fundamental_check, sentiment_check, historical_check, stock))
+                if streamlit.button('Quick Analysis'): 
+                    streamlit.session_state.quick_open = True
                 if streamlit.button('Comprehensive Analysis'): 
                     print('comprehensive')
     except Exception as exc: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
+
+if streamlit.session_state.quick_open: 
+    quick(fundamental_check, sentiment_check, historical_check, stock)
