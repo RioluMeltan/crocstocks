@@ -89,4 +89,3 @@ for stock in streamlit.session_state.tracked_stocks:
                     print('comprehensive')
     except Exception as exc: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
-        streamlit.error(exc)
