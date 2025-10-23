@@ -178,8 +178,8 @@ def quick(f_true, s_true, h_true, stock):
     progress.progress(100)
 
     streamlit.code(f_results[0])
-    streamlit.code(s_results[0])
-    streamlit.code(h_results[0])
+    streamlit.code(s_results)
+    streamlit.code(h_results)
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
