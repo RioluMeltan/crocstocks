@@ -24,9 +24,7 @@ class ProgressCallback(tensorflow.keras.callbacks.Callback):
 
 if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
-
-if 'quick_rerun' not in streamlit.session_state: 
-    streamlit.session_state.quick_rerun = False
+streamlit.session_state.quick_rerun = False
 
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
@@ -211,7 +209,6 @@ for stock in streamlit.session_state.tracked_stocks:
             else: 
                 if streamlit.button('Quick Analysis', key = 'quick' + stock): 
                     quick(fundamental_check, sentiment_check, historical_check, stock)
-                    streamlit.session_state.quick_rerun = False
                 if streamlit.button('Comprehensive Analysis', key = 'comprehensive' + stock): 
                     print('comprehensive')
     except Exception as exc: 
