@@ -144,7 +144,6 @@ def fetch_sentiment(symbol):
     print(f"Fetching market sentiment took {time.perf_counter() - start} seconds")
     return avg_sentiment
 
-@streamlit.cache_data
 def historical_analysis(symbol, _prog_bar, total, curr): 
     data = yfinance.download(symbol, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     start = time.perf_counter()
