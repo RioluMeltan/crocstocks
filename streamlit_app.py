@@ -143,7 +143,7 @@ def fetch_sentiment(symbol):
     return avg_sentiment
 
 @streamlit.cache_data
-def historical_analysis(symbol, prog_bar, total): 
+def historical_analysis(symbol, _prog_bar, total): 
     data = yfinance.download(symbol, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     start = time.perf_counter()
     scaler = sklearn.preprocessing.MinMaxScaler(feature_range = (0, 1))
@@ -158,7 +158,7 @@ def historical_analysis(symbol, prog_bar, total):
     model = tensorflow.keras.models.Sequential([tensorflow.keras.Input(shape = (x_train.shape[1], 1)), tensorflow.keras.layers.LSTM(units = 50, return_sequences = True), tensorflow.keras.layers.LSTM(units = 50), tensorflow.keras.layers.Dense(units = 1)])
     model.compile(optimizer = tensorflow.keras.optimizers.Adam(learning_rate = 0.001), loss = rmse)
     early_stopping = tensorflow.keras.callbacks.EarlyStopping(monitor = 'val_loss', patience = 5, restore_best_weights = True)
-    model.fit(x_train, y_train, epochs = 50, batch_size = 32, validation_data = (x_test, y_test), callbacks = [early_stopping, ProgressCallback(prog_bar, 50, total)])
+    model.fit(x_train, y_train, epochs = 50, batch_size = 32, validation_data = (x_test, y_test), callbacks = [early_stopping, ProgressCallback(_prog_bar, 50, total)])
     predicted_stock_price = model.predict(scaled_data[-59:].reshape(1, -1, 1))
     predicted_stock_price = scaler.inverse_transform(predicted_stock_price)
     print(f"Historical analysis took {time.perf_counter() - start} seconds")
@@ -173,7 +173,7 @@ def quick(f_true, s_true, h_true, stock):
         s_results = fetch_sentiment(stock)
         progress.progress(int(100 / sum([f_true, s_true, h_true])))
     if h_true:
-        h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]))
+        h_results = historical_analysis(stock, progress, ([f_true, s_true, h_true]))
     progress.progress(100)
 
 for stock in streamlit.session_state.tracked_stocks: 
