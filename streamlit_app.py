@@ -19,7 +19,7 @@ class ProgressCallback(tensorflow.keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs = None):
         self.last_epoch = epoch + 1
-        self.prog_bar.progress(int(((self.last_epoch / self.total_epochs) * 10000) / self.total))
+        self.prog_bar.progress(int(((self.last_epoch / self.total_epochs) * 100) / self.total))
 
 if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
