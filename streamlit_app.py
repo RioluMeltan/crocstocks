@@ -76,9 +76,9 @@ for stock in streamlit.session_state.tracked_stocks:
             data = get_long_data(stock, selections[selected_range])
             streamlit.line_chart(data['Close'])
         with col_2: 
-            fundamental_check = streamlit.checkbox('Include Fundamentals')
-            sentiment_check = streamlit.checkbox('Include Sentiment')
-            historical_check = streamlit.checkbox('Include Stock Prediction')
+            fundamental_check = streamlit.checkbox('Include Fundamentals', key = 'f' + stock)
+            sentiment_check = streamlit.checkbox('Include Sentiment', key = 's' + stock)
+            historical_check = streamlit.checkbox('Include Stock Prediction', key = 'h' + stock)
             if not fundamental_check and not sentiment_check and not historical_check:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
