@@ -71,7 +71,7 @@ for stock in streamlit.session_state.tracked_stocks:
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365, 'Previous 5 Years': 1825, 'All Time': 99999}
     selected_range = streamlit.radio('Select time range: ', list(selections.keys()), index = 5, horizontal = True, key = f'range_{stock}')
     try: 
-        col_1, col_2 = streamlit.columns([3, 1])
+        col_1, col_2 = streamlit.columns([4, 1])
         with col_1: 
             data = get_long_data(stock, selections[selected_range])
             streamlit.line_chart(data['Close'])
