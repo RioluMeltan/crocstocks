@@ -14,8 +14,8 @@ class ProgressCallback(tensorflow.keras.callbacks.Callback):
         super().__init__()
         self.prog_bar = prog_bar
         self.total_epochs = total_epochs
-        self.last_epoch = 0
         self.total = total
+        self.last_epoch = 0
 
     def on_epoch_end(self, epoch, logs = None):
         self.last_epoch = epoch + 1
