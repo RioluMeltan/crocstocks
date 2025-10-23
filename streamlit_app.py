@@ -178,7 +178,7 @@ def quick(f_true, s_true, h_true, stock):
         h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
     progress.progress(100)
     progress_struct.empty()
-    streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}\n{stock} Market Sentiment: {s_results:.4f}\n{stock} Projected Next Day Close: {h_results:.4f}')
+    streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}\n{stock} Market Sentiment: {s_results:.4f}\n{stock} Projected Next Day Close: ${h_results:.4f} USD')
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
