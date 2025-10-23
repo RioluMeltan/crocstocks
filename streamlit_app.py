@@ -174,7 +174,7 @@ def quick(f_true, s_true, h_true, stock):
         s_results = fetch_sentiment(stock)
         progress.progress(int(100 / sum([f_true, s_true, h_true])))
     if h_true:
-        h_results = historical_analysis(stock, progress, ([f_true, s_true, h_true]))
+        h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]))
     progress.progress(100)
 
 for stock in streamlit.session_state.tracked_stocks: 
