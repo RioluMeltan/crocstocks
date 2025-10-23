@@ -170,25 +170,27 @@ def historical_analysis(symbol, _prog_bar, total, curr):
 
 @streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
 def quick(f_true, s_true, h_true, stock): 
-    streamlit.session_state.quick_open = True
-    progress_struct = streamlit.empty()
-    progress = progress_struct.progress(0)
-    if f_true: 
-        f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
-    if s_true: 
-        s_results = fetch_sentiment(stock)
-        progress.progress(f_results[1] + int(100 / sum([f_true, s_true, h_true])))
-    if h_true:
-        h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
-    progress.progress(100)
-    progress_struct.empty()
-    if f_true: 
-        streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}')
-    if s_true: 
-        streamlit.code(f'{stock} Market Sentiment: {s_results:.4f}')
-    if h_true: 
-        streamlit.code(f'{stock} Projected Next Day Close: US${h_results:.4f}')
-    streamlit.button('Close')
+    if not streamlit.session_state.quick_rerun: 
+        progress_struct = streamlit.empty()
+        progress = progress_struct.progress(0)
+        if f_true: 
+            f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
+        if s_true: 
+            s_results = fetch_sentiment(stock)
+            progress.progress(f_results[1] + int(100 / sum([f_true, s_true, h_true])))
+        if h_true:
+            h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
+        progress.progress(100)
+        progress_struct.empty()
+        if f_true: 
+            streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}')
+        if s_true: 
+            streamlit.code(f'{stock} Market Sentiment: {s_results:.4f}')
+        if h_true: 
+            streamlit.code(f'{stock} Projected Next Day Close: US${h_results:.4f}')
+        streamlit.session_state.quick_rerun = True
+        if streamlit.button('Close'): 
+            streamlit.rerun()
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
@@ -207,10 +209,9 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
-                if streamlit.button('Quick Analysis', key = 'quick' + stock) and not streamlit.session_state.quick_open: 
+                if streamlit.button('Quick Analysis', key = 'quick' + stock): 
                     quick(fundamental_check, sentiment_check, historical_check, stock)
-                elif streamlit.session_state.quick_open: 
-                    streamlit.session_state.quick_open = False
+                    streamlit.session_state.quick_rerun = False
                 if streamlit.button('Comprehensive Analysis', key = 'comprehensive' + stock): 
                     print('comprehensive')
     except Exception as exc: 
