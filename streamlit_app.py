@@ -168,12 +168,12 @@ def historical_analysis(symbol, prog_bar, total):
 def quick(f_true, s_true, h_true, stock): 
     progress = streamlit.progress(0)
     if f_true: 
-        f_results = analyze_fundamentals(stock, progress, sum(f_true, s_true, h_true))
+        f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
     if s_true: 
         s_results = fetch_sentiment(stock)
-        progress.progress(int(100 / sum(f_true, s_true, h_true)))
+        progress.progress(int(100 / sum([f_true, s_true, h_true])))
     if h_true:
-        h_results = historical_analysis(stock, progress, sum(f_true, s_true, h_true))
+        h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]))
     progress.progress(100)
 
 for stock in streamlit.session_state.tracked_stocks: 
