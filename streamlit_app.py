@@ -167,7 +167,8 @@ def historical_analysis(symbol, _prog_bar, total, curr):
 
 @streamlit.dialog('Quick Analysis Results', width = 'medium')
 def quick(f_true, s_true, h_true, stock): 
-    progress = streamlit.progress(0)
+    progress_struct = streamlit.empty()
+    progress = progress_struct.progress(0)
     if f_true: 
         f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
     if s_true: 
@@ -176,6 +177,7 @@ def quick(f_true, s_true, h_true, stock):
     if h_true:
         h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
     progress.progress(100)
+    progress_struct.empty()
 
     streamlit.code(f_results[0])
     streamlit.code(s_results)
