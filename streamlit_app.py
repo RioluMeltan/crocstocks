@@ -76,6 +76,9 @@ for stock in streamlit.session_state.tracked_stocks:
             data = get_long_data(stock, selections[selected_range])
             streamlit.line_chart(data['Close'])
         with col_2: 
+            fundamental_check = streamlit.checkbox('Include Fundamentals')
+            sentiment_check = streamlit.checkbox('Include Sentiment')
+            historical_check = streamlit.checkbox('Include Stock Prediction')
             if streamlit.button('Quick Analysis'): 
                 print('quick')
             if streamlit.button('Comprehensive Analysis'): 
