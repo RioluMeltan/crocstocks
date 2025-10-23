@@ -199,7 +199,7 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
-                streamlit.button('Quick Analysis', on_click = quick)
+                streamlit.button('Quick Analysis', on_click = lambda: quick(fundamental_check, sentiment_check, historical_check, stock))
                 if streamlit.button('Comprehensive Analysis'): 
                     print('comprehensive')
     except Exception as exc: 
