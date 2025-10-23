@@ -9,6 +9,17 @@ import time
 import GoogleNews
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+class ProgressCallback(tensorflow.keras.callbacks.Callback): 
+    def __init__(self, prog_bar, total_epochs, total):
+        super().__init__()
+        self.prog_bar = prog_bar
+        self.total_epochs = total_epochs
+        self.last_epoch = 0
+
+    def on_epoch_end(self, epoch):
+        self.last_epoch = epoch + 1
+        self.prog_bar.progress(int(((self.last_epoch / self.total_epochs) * 10000) / self.total))
+
 if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 
@@ -65,7 +76,106 @@ def get_long_data(ticker, days):
             return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
         else: 
             return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
- 
+
+def rmse(y_label, y_pred):
+    return tensorflow.sqrt(tensorflow.reduce_mean(tensorflow.square(y_pred - y_label)))
+
+def analyze_fundamentals(symbol, prog_bar, total): 
+    start = time.perf_counter()
+    fundamental_value = 0
+    stock_info = yfinance.Ticker(symbol).info
+    curr = 0
+    try: 
+        fundamental_value += stock_info.get('trailingEps', None) * 0.2
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('revenueGrowth', None) * 0.2
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('profitMargins', None) * 0.15
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('returnOnEquity', None) * 0.15
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value -= stock_info.get('trailingPE', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('dividendYield', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value -= stock_info.get('debtToEquity', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    print(f"Fundamental analysis took {time.perf_counter() - start} seconds")
+    return fundamental_value
+
+def fetch_sentiment(symbol): 
+    start = time.perf_counter()
+    news = GoogleNews.GoogleNews(lang = 'en', period = '7d')
+    news.search(symbol)
+    headlines = [item['title'] for item in news.result() if item.get('title')]
+    paragraphs = [body['desc'] for body in news.result() if body.get('title')]
+    sia = SentimentIntensityAnalyzer(lexicon_file = 'sentiment/vader_lexicon/vader_lexicon.txt')
+    sentiment_scores = [sia.polarity_scores(headline)['compound'] for headline in headlines]
+    sentiment_scores += [sia.polarity_scores(paragraph)['compound'] for paragraph in paragraphs]
+    avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
+    print(f"Fetching market sentiment took {time.perf_counter() - start} seconds")
+    return avg_sentiment
+
+@streamlit.cache_data
+def historical_analysis(symbol, prog_bar, total): 
+    data = yfinance.download(symbol, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    start = time.perf_counter()
+    scaler = sklearn.preprocessing.MinMaxScaler(feature_range = (0, 1))
+    scaled_data = scaler.fit_transform(data['Close'].values)
+    train_data = []
+    for i in range(60, len(scaled_data)):
+        train_data.append(scaled_data[i - 60:i, 0])
+    train_data = numpy.array(train_data)
+    x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(train_data[:, :-1], train_data[:, -1], test_size = 0.2, random_state = 42)
+    x_train = numpy.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+    x_test = numpy.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+    model = tensorflow.keras.models.Sequential([tensorflow.keras.Input(shape = (x_train.shape[1], 1)), tensorflow.keras.layers.LSTM(units = 50, return_sequences = True), tensorflow.keras.layers.LSTM(units = 50), tensorflow.keras.layers.Dense(units = 1)])
+    model.compile(optimizer = tensorflow.keras.optimizers.Adam(learning_rate = 0.001), loss = rmse)
+    early_stopping = tensorflow.keras.callbacks.EarlyStopping(monitor = 'val_loss', patience = 5, restore_best_weights = True)
+    model.fit(x_train, y_train, epochs = 50, batch_size = 32, validation_data = (x_test, y_test), callbacks = [early_stopping, ProgressCallback(prog_bar, 50, total)])
+    predicted_stock_price = model.predict(scaled_data[-59:].reshape(1, -1, 1))
+    predicted_stock_price = scaler.inverse_transform(predicted_stock_price)
+    print(f"Historical analysis took {time.perf_counter() - start} seconds")
+    return float(predicted_stock_price[0][0])
+
+@streamlit.dialog('Quick Analysis Results', width = 'large', dismissible = False)
+def quick(f_true, s_true, h_true, stock): 
+    progress = streamlit.progress(0)
+    if f_true: 
+        f_results = analyze_fundamentals(stock, progress, sum(f_true, s_true, h_true))
+    if s_true: 
+        s_results = fetch_sentiment(stock)
+        progress.progress(int(100 / sum(f_true, s_true, h_true)))
+    if h_true:
+        h_results = historical_analysis(stock, progress, sum(f_true, s_true, h_true))
+    progress.progress(100)
+
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
     selections = {'Previous 5 Days': 5, 'Previous Month': 30, 'Previous 6 Months': 180, 'Previous Year': 365, 'Previous 5 Years': 1825, 'All Time': 99999}
@@ -84,7 +194,7 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
             else: 
                 if streamlit.button('Quick Analysis'): 
-                    print('quick')
+                    quick(fundamental_check, sentiment_check, historical_check, stock)
                 if streamlit.button('Comprehensive Analysis'): 
                     print('comprehensive')
     except Exception as exc: 
