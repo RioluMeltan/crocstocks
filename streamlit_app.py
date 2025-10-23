@@ -79,9 +79,13 @@ for stock in streamlit.session_state.tracked_stocks:
             fundamental_check = streamlit.checkbox('Include Fundamentals')
             sentiment_check = streamlit.checkbox('Include Sentiment')
             historical_check = streamlit.checkbox('Include Stock Prediction')
-            if streamlit.button('Quick Analysis'): 
-                print('quick')
-            if streamlit.button('Comprehensive Analysis'): 
-                print('comprehensive')
+            if not fundamental_check and not sentiment_check and not historical_check:
+                streamlit.markdown("<button disabled style = 'opacity:0.6;'>Quick Analysis</button>", unsafe_allow_html = True)
+                streamlit.markdown("<button disabled style = 'opacity:0.6;'>Comprehensive Analysis</button>", unsafe_allow_html = True)
+            else: 
+                if streamlit.button('Quick Analysis'): 
+                    print('quick')
+                if streamlit.button('Comprehensive Analysis'): 
+                    print('comprehensive')
     except Exception: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
