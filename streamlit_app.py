@@ -16,7 +16,7 @@ class ProgressCallback(tensorflow.keras.callbacks.Callback):
         self.total_epochs = total_epochs
         self.last_epoch = 0
 
-    def on_epoch_end(self, epoch):
+    def on_epoch_end(self, epoch, logs = None):
         self.last_epoch = epoch + 1
         self.prog_bar.progress(int(((self.last_epoch / self.total_epochs) * 10000) / self.total))
 
