@@ -26,7 +26,7 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 
 if 'quick_rerun' not in streamlit.session_state: 
-    streamlit.session_state.quick_rerun = True
+    streamlit.session_state.quick_rerun = False
 
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
