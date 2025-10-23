@@ -166,7 +166,7 @@ def historical_analysis(symbol, _prog_bar, total, curr):
     print(f"Historical analysis took {time.perf_counter() - start} seconds")
     return float(predicted_stock_price[0][0])
 
-@streamlit.dialog('Quick Analysis Results', width = 'large', dismissible = False)
+@streamlit.dialog('Quick Analysis Results', width = 'large')
 def quick(f_true, s_true, h_true, stock): 
     progress = streamlit.progress(0)
     if f_true: 
@@ -177,6 +177,10 @@ def quick(f_true, s_true, h_true, stock):
     if h_true:
         h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
     progress.progress(100)
+
+    streamlit.code(f_results[0])
+    streamlit.code(s_results[0])
+    streamlit.code(h_results[0])
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
