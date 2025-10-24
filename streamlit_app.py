@@ -34,6 +34,7 @@ Ideal for traders, data-driven investors, and financial analysts seeking smarter
 ''')
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', page_icon = PIL.Image.open('assets/croc_logo_circle.png'), layout = 'wide')
 
+streamlit.sidebar.image(PIL.Image.open('assets/croc_logo_circle.png'))
 streamlit.sidebar.header('Add Stocks to Watchlist')
 ticker = streamlit.sidebar.text_input('Enter Stock Ticker')
 if streamlit.sidebar.button('Add to Watchlist'): 
