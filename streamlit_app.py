@@ -190,7 +190,7 @@ def quick(f_true, s_true, h_true, stock):
             streamlit.code(f'{stock} Projected Next Day Close: US${h_results:.4f}')
         streamlit.session_state.quick_rerun = True
         if streamlit.button('Close'): 
-            streamlit.rerun()
+            streamlit.rerun(scope = 'app')
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
