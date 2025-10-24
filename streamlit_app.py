@@ -186,8 +186,8 @@ def quick(f_true, s_true, h_true, stock):
         if s_true: 
             output += f'{stock} Market Sentiment: {(s_results * 100):.4f}%\n'
         if h_true: 
-            output += f'{stock} Projected Next Day Close: {h_results:.4f} USD'
-        streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.4f} USD\n' + output, language = None)
+            output += f'{stock} Projected Next Day Close: {h_results:.2f} USD'
+        streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.2f} USD\n' + output, language = None)
         streamlit.session_state.quick_rerun = True
         if streamlit.button('Close'): 
             streamlit.rerun()
