@@ -85,7 +85,7 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{'+' if diff >= 0 else ''}{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({'+' if diff >= 0 else ''}{change:.2f}%)</span></div>", unsafe_allow_html = True)
             with col_2: 
                 streamlit.write('')
-                if streamlit.button('❌', key = 'remove' + stock):
+                if streamlit.button('X', key = 'remove' + stock):
                     streamlit.session_state.tracked_stocks.remove(stock)
                     streamlit.rerun()
     else: 
