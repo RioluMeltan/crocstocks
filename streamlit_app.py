@@ -182,7 +182,7 @@ def quick(f_true, s_true, h_true, stock):
         progress_struct.empty()
         output = ''
         if f_true: 
-            output += f'{stock} Fundamentals: {(f_results[0] * 100):.2f}%\n'
+            output += f'{stock} Fundamentals: {f_results[0]:.4f}%\n'
         if s_true: 
             output += f'{stock} Market Sentiment: {s_results:.4f}\n'
         if h_true: 
