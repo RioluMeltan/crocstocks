@@ -180,12 +180,14 @@ def quick(f_true, s_true, h_true, stock):
             h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
         progress.progress(100)
         progress_struct.empty()
+        output = ''
         if f_true: 
-            streamlit.code(f'{stock} Fundamentals: {f_results[0]:.4f}')
+            output += f'{stock} Fundamentals: {f_results[0]:.4f}\n'
         if s_true: 
-            streamlit.code(f'{stock} Market Sentiment: {s_results:.4f}')
+            output += f'{stock} Market Sentiment: {s_results:.4f}\n'
         if h_true: 
-            streamlit.code(f'{stock} Projected Next Day Close: {h_results:.4f} USD')
+            output += f'{stock} Projected Next Day Close: {h_results:.4f} USD'
+        streamlit.code(output, language = None)
         streamlit.session_state.quick_rerun = True
         if streamlit.button('Close'): 
             streamlit.rerun()
@@ -214,5 +216,5 @@ for stock in streamlit.session_state.tracked_stocks:
                     quick(fundamental_check, sentiment_check, historical_check, stock)
                 if streamlit.button('Comprehensive Analysis', key = 'comprehensive' + stock): 
                     print('comprehensive')
-    except Exception as exc: 
+    except Exception: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
