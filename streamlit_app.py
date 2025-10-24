@@ -29,7 +29,7 @@ streamlit.session_state.quick_rerun = False
 
 streamlit.title('CrocStocks - Stochastic Stock Predictor')
 streamlit.markdown('''
-Explore dynamic market forecasting with CrocStocks, a cutting-edge tool that blends fundamental analysis, real-time market sentiment, and LSTM-based price prediction.  
+Delve into dynamic market forecasting with CrocStocks, a cutting-edge tool that blends fundamental analysis, real-time market sentiment, and LSTM-based price prediction.  
 Ideal for traders, data-driven investors, and financial analysts seeking smarter, faster insights.
 ''')
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', page_icon = PIL.Image.open('assets/croc_logo_circle.png').resize((64, 64)), layout = 'wide')
