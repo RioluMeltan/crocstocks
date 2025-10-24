@@ -80,7 +80,7 @@ for stock in streamlit.session_state.tracked_stocks:
         color = 'green' if diff >= 0 else 'red'
         change = diff * 100
         with streamlit.sidebar: 
-            col_1, col_2 = streamlit.columns([3, 1])
+            col_1, col_2 = streamlit.columns([5, 1])
             with col_1: 
                 streamlit.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{'+' if diff >= 0 else ''}{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({'+' if diff >= 0 else ''}{change:.2f}%)</span></div>", unsafe_allow_html = True)
             with col_2: 
