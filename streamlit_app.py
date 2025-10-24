@@ -192,6 +192,8 @@ def quick(f_true, s_true, h_true, stock):
         if streamlit.button('Close'): 
             streamlit.rerun()
             streamlit.stop()
+    else: 
+        streamlit.rerun()
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
