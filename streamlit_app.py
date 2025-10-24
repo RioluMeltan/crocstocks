@@ -89,37 +89,37 @@ def analyze_fundamentals(symbol, prog_bar, total):
     stock_info = yfinance.Ticker(symbol).info
     curr = 0
     try: 
-        fundamental_value += stock_info.get('trailingEps', None) * 0.2
+        fundamental_value += stock_info.get('profitMargins', None) * 0.2
     except Exception as ex: 
         print(ex)
     prog_bar.progress(int((100 / total) / 7))
     curr += int((100 / total) / 7)
     try: 
-        fundamental_value += stock_info.get('revenueGrowth', None) * 0.2
+        fundamental_value += stock_info.get('operatingMargins', None) * 0.15
     except Exception as ex: 
         print(ex)
     prog_bar.progress(curr + int((100 / total) / 7))
     curr += int((100 / total) / 7)
     try: 
-        fundamental_value += stock_info.get('profitMargins', None) * 0.15
+        fundamental_value += stock_info.get('grossMargins', None) * 0.1
     except Exception as ex: 
         print(ex)
     prog_bar.progress(curr + int((100 / total) / 7))
     curr += int((100 / total) / 7)
     try: 
-        fundamental_value += stock_info.get('returnOnEquity', None) * 0.15
+        fundamental_value += stock_info.get('returnOnEquity', None) * 0.2
     except Exception as ex: 
         print(ex)
     prog_bar.progress(curr + int((100 / total) / 7))
     curr += int((100 / total) / 7)
     try: 
-        fundamental_value -= stock_info.get('trailingPE', None) * 0.1
+        fundamental_value += stock_info.get('returnOnAssets', None) * 0.1
     except Exception as ex: 
         print(ex)
     prog_bar.progress(curr + int((100 / total) / 7))
     curr += int((100 / total) / 7)
     try: 
-        fundamental_value += stock_info.get('dividendYield', None) * 0.1
+        fundamental_value -= stock_info.get('payoutRatio', None) * 0.15
     except Exception as ex: 
         print(ex)
     prog_bar.progress(curr + int((100 / total) / 7))
@@ -182,7 +182,7 @@ def quick(f_true, s_true, h_true, stock):
         progress_struct.empty()
         output = ''
         if f_true: 
-            output += f'{stock} Fundamentals: {f_results[0]:.4f}\n'
+            output += f'{stock} Fundamentals: {(f_results[0] * 100):.2f}%\n'
         if s_true: 
             output += f'{stock} Market Sentiment: {s_results:.4f}\n'
         if h_true: 
