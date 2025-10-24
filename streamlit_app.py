@@ -47,20 +47,6 @@ if len(streamlit.session_state.tracked_stocks) == 0:
 def get_change_data(ticker): 
     return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 1), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
 
-for stock in streamlit.session_state.tracked_stocks: 
-    close_diff = get_change_data(stock)
-    if not close_diff.empty: 
-        diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
-        color = 'green' if diff >= 0 else 'red'
-        change = diff * 100
-        streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{'+' if diff >= 0 else ''}{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({'+' if diff >= 0 else ''}{change:.2f}%)</span></div>", unsafe_allow_html = True)
-    else: 
-        streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
-
-streamlit.title("Your Watchlist's Performance")
-if len(streamlit.session_state.tracked_stocks) == 0: 
-    streamlit.caption('Your watchlist is empty.')
-
 @streamlit.cache_data
 def get_long_data(ticker, days): 
     ipo_date = yfinance.Ticker(ticker).history(period = 'max').index[0].to_pydatetime()
@@ -79,6 +65,20 @@ def get_long_data(ticker, days):
             return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
         else: 
             return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+
+for stock in streamlit.session_state.tracked_stocks: 
+    close_diff = get_change_data(stock)
+    if not close_diff.empty: 
+        diff = (float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])) / float(close_diff['Open'].iloc[0])
+        color = 'green' if diff >= 0 else 'red'
+        change = diff * 100
+        streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: {color};'>{'+' if diff >= 0 else ''}{(float(close_diff['Open'].iloc[0]) - float(close_diff['Close'].iloc[-1])):.2f}({'+' if diff >= 0 else ''}{change:.2f}%)</span></div>", unsafe_allow_html = True)
+    else: 
+        streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
+
+streamlit.title("Your Watchlist's Performance")
+if len(streamlit.session_state.tracked_stocks) == 0: 
+    streamlit.caption('Your watchlist is empty.')
 
 def rmse(y_label, y_pred):
     return tensorflow.sqrt(tensorflow.reduce_mean(tensorflow.square(y_pred - y_label)))
@@ -146,7 +146,7 @@ def fetch_sentiment(symbol):
     return avg_sentiment
 
 def historical_analysis(symbol, _prog_bar, total, curr): 
-    data = yfinance.download(symbol, start = datetime.datetime.now() - datetime.timedelta(days = 365), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    data = get_long_data(symbol, 365)
     start = time.perf_counter()
     scaler = sklearn.preprocessing.MinMaxScaler(feature_range = (0, 1))
     scaled_data = scaler.fit_transform(data['Close'].values)
@@ -187,7 +187,7 @@ def quick(f_true, s_true, h_true, stock):
             output += f'{stock} Market Sentiment: {s_results:.4f}\n'
         if h_true: 
             output += f'{stock} Projected Next Day Close: {h_results:.4f} USD'
-        streamlit.code(output, language = None)
+        streamlit.code(f'{stock} Current Close: {get_change_data(stock)['Close'][0]}\n' + output, language = None)
         streamlit.session_state.quick_rerun = True
         if streamlit.button('Close'): 
             streamlit.rerun()
