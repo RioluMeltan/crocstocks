@@ -85,14 +85,14 @@ for stock in streamlit.session_state.tracked_stocks:
         with col_2: 
             if streamlit.sidebar.button('❌', key = 'remove' + stock):
                 streamlit.session_state.tracked_stocks.remove(stock)
-                streamlit.rerun(scope = 'fragment')
+                streamlit.rerun()
     else: 
         with col_1: 
             streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
         with col_2: 
             if streamlit.sidebar.button('❌', key = 'remove' + stock):
                 streamlit.session_state.tracked_stocks.remove(stock)
-                streamlit.rerun(scope = 'fragment')
+                streamlit.rerun()
 
 streamlit.title("Your Watchlist's Performance")
 if len(streamlit.session_state.tracked_stocks) == 0: 
