@@ -26,6 +26,11 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 streamlit.session_state.quick_rerun = False
 
+streamlit.markdown('''
+CrocStocks – Stochastic Stock Predictor  
+Dive into dynamic market forecasting with CrocStocks, a cutting-edge tool that blends fundamental analysis, real-time market sentiment, and LSTM-based price prediction.  
+Ideal for traders, data-driven investors, and financial analysts seeking smarter, faster insights.
+''')
 streamlit.set_page_config(page_title = 'CrocStocks Stock Predictor', layout = 'wide')
 streamlit.sidebar.header('Add Stocks to Watchlist')
 
