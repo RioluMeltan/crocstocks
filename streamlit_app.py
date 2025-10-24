@@ -192,13 +192,16 @@ def quick(f_true, s_true, h_true, stock):
     if not streamlit.session_state.quick_rerun: 
         progress_struct = streamlit.empty()
         progress = progress_struct.progress(0)
+        coeff = 0
         if f_true: 
             f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
+            coeff += f_results[1]
         if s_true: 
             s_results = fetch_sentiment(stock)
-            progress.progress(f_results[1] + int(100 / sum([f_true, s_true, h_true])))
+            progress.progress(coeff + int(100 / sum([f_true, s_true, h_true])))
+            coeff += int(100 / sum([f_true, s_true, h_true]))
         if h_true:
-            h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), f_results[1] + int(100 / sum([f_true, s_true, h_true])))
+            h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), coeff)
         progress.progress(100)
         progress_struct.empty()
         output = ''
