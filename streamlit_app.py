@@ -31,7 +31,7 @@ streamlit.session_state.quick_rerun = False
 def quick_all(): 
     if not streamlit.session_state.quick_rerun: 
         coeff = 0
-        for i in len(streamlit.session_state.tracked_stocks): 
+        for i in range(len(streamlit.session_state.tracked_stocks)): 
             progress_struct = streamlit.empty()
             progress = progress_struct.progress(0)
             f_results = analyze_fundamentals(streamlit.session_state.tracked_stocks[i], progress, 3 * i)
