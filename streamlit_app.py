@@ -117,9 +117,9 @@ def historical_analysis(symbol, _prog_bar, total, curr):
 def quick_all(): 
     if not streamlit.session_state.quick_rerun: 
         coeff = 0
+        progress_struct = streamlit.empty()
+        progress = progress_struct.progress(0)
         for stock in streamlit.session_state.tracked_stocks: 
-            progress_struct = streamlit.empty()
-            progress = progress_struct.progress(0)
             f_results = analyze_fundamentals(stock, progress, 3 * len(streamlit.session_state.tracked_stocks))
             coeff += f_results[1]
             s_results = fetch_sentiment(stock)
