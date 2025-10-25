@@ -157,7 +157,7 @@ with col_2:
     streamlit.write('')
     if streamlit.button('Quick Analyze All Tickers') and len(streamlit.session_state.tracked_stocks) != 0: 
         quick_all()
-    else: 
+    elif streamlit.button('Quick Analyze All Tickers'): 
         streamlit.toast('You have no stocks to analyze.')
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.caption('Your watchlist is empty.')
