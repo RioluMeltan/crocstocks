@@ -101,7 +101,7 @@ col_1, col_2 = streamlit.columns([5, 1])
 with col_1: 
     streamlit.header("Your Watchlist's Performance")
 with col_2: 
-    streamlit.write('')
+    streamlit.write('\n\n')
     streamlit.button('Testing button')
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.caption('Your watchlist is empty.')
