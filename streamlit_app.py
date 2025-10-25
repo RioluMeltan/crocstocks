@@ -124,7 +124,7 @@ def quick_all():
             coeff += f_results[1]
             s_results = fetch_sentiment(stock)
             progress.progress(coeff + int(100 / (3 * len(streamlit.session_state.tracked_stocks))))
-            coeff += int(100 / 3)
+            coeff += int(100 / (3 * len(streamlit.session_state.tracked_stocks)))
             h_results = historical_analysis(stock, progress, 3 * len(streamlit.session_state.tracked_stocks), coeff)
             progress_struct.empty()
             streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.2f} USD\n{stock} Fundamentals: {f_results[0]:.4f}%\n{stock} Market Sentiment: {(s_results * 100):.4f}%\n{stock} Projected Next Day Close: {h_results:.2f} USD', language = None)
