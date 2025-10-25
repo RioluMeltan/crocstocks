@@ -27,6 +27,59 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 streamlit.session_state.quick_rerun = False
 
+@streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
+def quick_all(): 
+    if not streamlit.session_state.quick_rerun: 
+        coeff = 0
+        for i in len(streamlit.session_state.tracked_stocks): 
+            progress_struct = streamlit.empty()
+            progress = progress_struct.progress(0)
+            f_results = analyze_fundamentals(streamlit.session_state.tracked_stocks[i], progress, 3 * i)
+            coeff += f_results[1]
+            s_results = fetch_sentiment(streamlit.session_state.tracked_stocks[i])
+            progress.progress(coeff + int(100 / (3 * i)))
+            coeff += int(100 / 3)
+            h_results = historical_analysis(streamlit.session_state.tracked_stocks[i], progress, 3 * i, coeff)
+            progress.progress(100)
+            progress_struct.empty()
+            streamlit.code(f'{streamlit.session_state.tracked_stocks[i]} Current Day Close: {get_change_data(streamlit.session_state.tracked_stocks[i])['Close'].values[-1][0]:.2f} USD\n{streamlit.session_state.tracked_stocks[i]} Fundamentals: {f_results[0]:.4f}%\n{streamlit.session_state.tracked_stocks[i]} Market Sentiment: {(s_results * 100):.4f}%\n{streamlit.session_state.tracked_stocks[i]} Projected Next Day Close: {h_results:.2f} USD', language = None)
+        streamlit.session_state.quick_rerun = True
+        if streamlit.button('Close'): 
+                streamlit.rerun(scope = 'fragment')
+    else: 
+        streamlit.rerun()
+
+@streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
+def quick(f_true, s_true, h_true, stock): 
+    if not streamlit.session_state.quick_rerun: 
+        progress_struct = streamlit.empty()
+        progress = progress_struct.progress(0)
+        coeff = 0
+        if f_true: 
+            f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
+            coeff += f_results[1]
+        if s_true: 
+            s_results = fetch_sentiment(stock)
+            progress.progress(coeff + int(100 / sum([f_true, s_true, h_true])))
+            coeff += int(100 / sum([f_true, s_true, h_true]))
+        if h_true:
+            h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), coeff)
+        progress.progress(100)
+        progress_struct.empty()
+        output = ''
+        if f_true: 
+            output += f'{stock} Fundamentals: {f_results[0]:.4f}%\n'
+        if s_true: 
+            output += f'{stock} Market Sentiment: {(s_results * 100):.4f}%\n'
+        if h_true: 
+            output += f'{stock} Projected Next Day Close: {h_results:.2f} USD'
+        streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.2f} USD\n' + output, language = None)
+        streamlit.session_state.quick_rerun = True
+        if streamlit.button('Close'): 
+            streamlit.rerun(scope = 'fragment')
+    else: 
+        streamlit.rerun()
+
 streamlit.title('CrocStocks - Stochastic Stock Predictor')
 streamlit.markdown('''
 CrocStocks is a cutting-edge tool that blends analysis of fundamentals, real-time market sentiment, and LSTM-based price prediction.  
@@ -93,17 +146,19 @@ for stock in streamlit.session_state.tracked_stocks:
             streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
         with col_2: 
             streamlit.write('')
-            if streamlit.sidebar.button('❌', key = 'remove' + stock):
+            if streamlit.sidebar.button('X', key = 'remove' + stock):
                 streamlit.session_state.tracked_stocks.remove(stock)
                 streamlit.rerun()
 
-col_1, col_2 = streamlit.columns([5, 1])
+col_1, col_2 = streamlit.columns([3, 1])
 with col_1: 
     streamlit.header("Your Watchlist's Performance")
 with col_2: 
     streamlit.write('')
-    streamlit.write('')
-    streamlit.button('Testing button')
+    if streamlit.button('Quick Analyze All Tickers') and len(streamlit.session_state.tracked_stocks) != 0: 
+        quick_all()
+    else: 
+        streamlit.toast('You have no stocks to analyze.')
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.caption('Your watchlist is empty.')
 
@@ -192,37 +247,6 @@ def historical_analysis(symbol, _prog_bar, total, curr):
     predicted_stock_price = scaler.inverse_transform(predicted_stock_price)
     print(f"Historical analysis took {time.perf_counter() - start} seconds")
     return float(predicted_stock_price[0][0])
-
-@streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
-def quick(f_true, s_true, h_true, stock): 
-    if not streamlit.session_state.quick_rerun: 
-        progress_struct = streamlit.empty()
-        progress = progress_struct.progress(0)
-        coeff = 0
-        if f_true: 
-            f_results = analyze_fundamentals(stock, progress, sum([f_true, s_true, h_true]))
-            coeff += f_results[1]
-        if s_true: 
-            s_results = fetch_sentiment(stock)
-            progress.progress(coeff + int(100 / sum([f_true, s_true, h_true])))
-            coeff += int(100 / sum([f_true, s_true, h_true]))
-        if h_true:
-            h_results = historical_analysis(stock, progress, sum([f_true, s_true, h_true]), coeff)
-        progress.progress(100)
-        progress_struct.empty()
-        output = ''
-        if f_true: 
-            output += f'{stock} Fundamentals: {f_results[0]:.4f}%\n'
-        if s_true: 
-            output += f'{stock} Market Sentiment: {(s_results * 100):.4f}%\n'
-        if h_true: 
-            output += f'{stock} Projected Next Day Close: {h_results:.2f} USD'
-        streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.2f} USD\n' + output, language = None)
-        streamlit.session_state.quick_rerun = True
-        if streamlit.button('Close'): 
-            streamlit.rerun(scope = 'fragment')
-    else: 
-        streamlit.rerun()
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
