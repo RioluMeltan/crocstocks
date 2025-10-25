@@ -116,6 +116,7 @@ def historical_analysis(symbol, _prog_bar, total, curr):
 @streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
 def quick_all(): 
     if not streamlit.session_state.quick_rerun: 
+        
         coeff = 0
         for i in range(len(streamlit.session_state.tracked_stocks)): 
             progress_struct = streamlit.empty()
@@ -126,9 +127,9 @@ def quick_all():
             progress.progress(coeff + int(100 / (3 * (i + 2))))
             coeff += int(100 / 3)
             h_results = historical_analysis(streamlit.session_state.tracked_stocks[i], progress, 3 * (i + 2), coeff)
-            progress.progress(100)
             progress_struct.empty()
             streamlit.code(f'{streamlit.session_state.tracked_stocks[i]} Current Day Close: {get_change_data(streamlit.session_state.tracked_stocks[i])['Close'].values[-1][0]:.2f} USD\n{streamlit.session_state.tracked_stocks[i]} Fundamentals: {f_results[0]:.4f}%\n{streamlit.session_state.tracked_stocks[i]} Market Sentiment: {(s_results * 100):.4f}%\n{streamlit.session_state.tracked_stocks[i]} Projected Next Day Close: {h_results:.2f} USD', language = None)
+        progress.progress(100)
         streamlit.session_state.quick_rerun = True
         if streamlit.button('Close'): 
                 streamlit.rerun(scope = 'fragment')
