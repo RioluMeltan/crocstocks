@@ -27,6 +27,92 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 streamlit.session_state.quick_rerun = False
 
+def rmse(y_label, y_pred):
+    return tensorflow.sqrt(tensorflow.reduce_mean(tensorflow.square(y_pred - y_label)))
+
+def analyze_fundamentals(symbol, prog_bar, total): 
+    start = time.perf_counter()
+    fundamental_value = 0
+    stock_info = yfinance.Ticker(symbol).info
+    curr = 0
+    try: 
+        fundamental_value += stock_info.get('profitMargins', None) * 0.2
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('operatingMargins', None) * 0.15
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('grossMargins', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('returnOnEquity', None) * 0.2
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value += stock_info.get('returnOnAssets', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value -= stock_info.get('payoutRatio', None) * 0.15
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    curr += int((100 / total) / 7)
+    try: 
+        fundamental_value -= stock_info.get('debtToEquity', None) * 0.1
+    except Exception as ex: 
+        print(ex)
+    prog_bar.progress(curr + int((100 / total) / 7))
+    print(f"Fundamental analysis took {time.perf_counter() - start} seconds")
+    return [fundamental_value, curr + int((100 / total) / 7)]
+
+def fetch_sentiment(symbol): 
+    start = time.perf_counter()
+    news = GoogleNews.GoogleNews(lang = 'en', period = '7d')
+    news.search(symbol)
+    headlines = [item['title'] for item in news.result() if item.get('title')]
+    paragraphs = [body['desc'] for body in news.result() if body.get('title')]
+    sia = SentimentIntensityAnalyzer(lexicon_file = 'sentiment/vader_lexicon/vader_lexicon.txt')
+    sentiment_scores = [sia.polarity_scores(headline)['compound'] for headline in headlines]
+    sentiment_scores += [sia.polarity_scores(paragraph)['compound'] for paragraph in paragraphs]
+    avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
+    print(f"Fetching market sentiment took {time.perf_counter() - start} seconds")
+    return avg_sentiment
+
+def historical_analysis(symbol, _prog_bar, total, curr): 
+    data = get_long_data(symbol, 365)
+    start = time.perf_counter()
+    scaler = sklearn.preprocessing.MinMaxScaler(feature_range = (0, 1))
+    scaled_data = scaler.fit_transform(data['Close'].values)
+    train_data = []
+    for i in range(60, len(scaled_data)):
+        train_data.append(scaled_data[i - 60:i, 0])
+    train_data = numpy.array(train_data)
+    x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(train_data[:, :-1], train_data[:, -1], test_size = 0.2, random_state = 42)
+    x_train = numpy.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+    x_test = numpy.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+    model = tensorflow.keras.models.Sequential([tensorflow.keras.Input(shape = (x_train.shape[1], 1)), tensorflow.keras.layers.LSTM(units = 50, return_sequences = True), tensorflow.keras.layers.LSTM(units = 50), tensorflow.keras.layers.Dense(units = 1)])
+    model.compile(optimizer = tensorflow.keras.optimizers.Adam(learning_rate = 0.001), loss = rmse)
+    early_stopping = tensorflow.keras.callbacks.EarlyStopping(monitor = 'val_loss', patience = 5, restore_best_weights = True)
+    model.fit(x_train, y_train, epochs = 50, batch_size = 32, validation_data = (x_test, y_test), callbacks = [early_stopping, ProgressCallback(_prog_bar, 50, total, curr)])
+    predicted_stock_price = model.predict(scaled_data[-59:].reshape(1, -1, 1))
+    predicted_stock_price = scaler.inverse_transform(predicted_stock_price)
+    print(f"Historical analysis took {time.perf_counter() - start} seconds")
+    return float(predicted_stock_price[0][0])
+
 @streamlit.dialog('Quick Analysis Results', width = 'medium', dismissible = False)
 def quick_all(): 
     if not streamlit.session_state.quick_rerun: 
@@ -159,92 +245,6 @@ with col_2:
         quick_all()
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.caption('Your watchlist is empty.')
-
-def rmse(y_label, y_pred):
-    return tensorflow.sqrt(tensorflow.reduce_mean(tensorflow.square(y_pred - y_label)))
-
-def analyze_fundamentals(symbol, prog_bar, total): 
-    start = time.perf_counter()
-    fundamental_value = 0
-    stock_info = yfinance.Ticker(symbol).info
-    curr = 0
-    try: 
-        fundamental_value += stock_info.get('profitMargins', None) * 0.2
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value += stock_info.get('operatingMargins', None) * 0.15
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value += stock_info.get('grossMargins', None) * 0.1
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value += stock_info.get('returnOnEquity', None) * 0.2
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value += stock_info.get('returnOnAssets', None) * 0.1
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value -= stock_info.get('payoutRatio', None) * 0.15
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    curr += int((100 / total) / 7)
-    try: 
-        fundamental_value -= stock_info.get('debtToEquity', None) * 0.1
-    except Exception as ex: 
-        print(ex)
-    prog_bar.progress(curr + int((100 / total) / 7))
-    print(f"Fundamental analysis took {time.perf_counter() - start} seconds")
-    return [fundamental_value, curr + int((100 / total) / 7)]
-
-def fetch_sentiment(symbol): 
-    start = time.perf_counter()
-    news = GoogleNews.GoogleNews(lang = 'en', period = '7d')
-    news.search(symbol)
-    headlines = [item['title'] for item in news.result() if item.get('title')]
-    paragraphs = [body['desc'] for body in news.result() if body.get('title')]
-    sia = SentimentIntensityAnalyzer(lexicon_file = 'sentiment/vader_lexicon/vader_lexicon.txt')
-    sentiment_scores = [sia.polarity_scores(headline)['compound'] for headline in headlines]
-    sentiment_scores += [sia.polarity_scores(paragraph)['compound'] for paragraph in paragraphs]
-    avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
-    print(f"Fetching market sentiment took {time.perf_counter() - start} seconds")
-    return avg_sentiment
-
-def historical_analysis(symbol, _prog_bar, total, curr): 
-    data = get_long_data(symbol, 365)
-    start = time.perf_counter()
-    scaler = sklearn.preprocessing.MinMaxScaler(feature_range = (0, 1))
-    scaled_data = scaler.fit_transform(data['Close'].values)
-    train_data = []
-    for i in range(60, len(scaled_data)):
-        train_data.append(scaled_data[i - 60:i, 0])
-    train_data = numpy.array(train_data)
-    x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(train_data[:, :-1], train_data[:, -1], test_size = 0.2, random_state = 42)
-    x_train = numpy.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
-    x_test = numpy.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-    model = tensorflow.keras.models.Sequential([tensorflow.keras.Input(shape = (x_train.shape[1], 1)), tensorflow.keras.layers.LSTM(units = 50, return_sequences = True), tensorflow.keras.layers.LSTM(units = 50), tensorflow.keras.layers.Dense(units = 1)])
-    model.compile(optimizer = tensorflow.keras.optimizers.Adam(learning_rate = 0.001), loss = rmse)
-    early_stopping = tensorflow.keras.callbacks.EarlyStopping(monitor = 'val_loss', patience = 5, restore_best_weights = True)
-    model.fit(x_train, y_train, epochs = 50, batch_size = 32, validation_data = (x_test, y_test), callbacks = [early_stopping, ProgressCallback(_prog_bar, 50, total, curr)])
-    predicted_stock_price = model.predict(scaled_data[-59:].reshape(1, -1, 1))
-    predicted_stock_price = scaler.inverse_transform(predicted_stock_price)
-    print(f"Historical analysis took {time.perf_counter() - start} seconds")
-    return float(predicted_stock_price[0][0])
 
 for stock in streamlit.session_state.tracked_stocks: 
     streamlit.subheader(f'{stock} - Historical Data')
