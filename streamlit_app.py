@@ -27,7 +27,7 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 streamlit.session_state.quick_rerun = False
 
-streamlit.header('CrocStocks - Stochastic Stock Predictor')
+streamlit.title('CrocStocks - Stochastic Stock Predictor')
 streamlit.markdown('''
 CrocStocks is a cutting-edge tool that blends analysis of fundamentals, real-time market sentiment, and LSTM-based price prediction.  
 Ideal for traders, data-driven investors, and financial analysts seeking smarter, faster insights.
@@ -97,7 +97,7 @@ for stock in streamlit.session_state.tracked_stocks:
                 streamlit.session_state.tracked_stocks.remove(stock)
                 streamlit.rerun()
 
-streamlit.title("Your Watchlist's Performance")
+streamlit.header("Your Watchlist's Performance")
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.caption('Your watchlist is empty.')
 
