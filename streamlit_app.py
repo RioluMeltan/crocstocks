@@ -234,7 +234,7 @@ for stock in streamlit.session_state.tracked_stocks:
         with streamlit.sidebar: 
             col_1, col_2 = streamlit.columns([3, 1])
             with col_1: 
-                streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Unavailable change amount</span></div>", unsafe_allow_html = True)
+                streamlit.sidebar.markdown(f"<div style = 'border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;'><strong>{stock}</strong><br><span style = 'color: gray;'>Change error</span></div>", unsafe_allow_html = True)
             with col_2: 
                 streamlit.write('')
                 if streamlit.sidebar.button('X', key = 'remove' + stock):
