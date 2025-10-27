@@ -27,29 +27,6 @@ if 'tracked_stocks' not in streamlit.session_state:
     streamlit.session_state.tracked_stocks = []
 streamlit.session_state.quick_rerun = False
 
-@streamlit.cache_data
-def get_change_data(ticker): 
-    return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 1), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-
-@streamlit.cache_data
-def get_long_data(ticker, days): 
-    ipo_date = yfinance.Ticker(ticker).history(period = 'max').index[0].to_pydatetime()
-    if days == 99999: 
-        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
-            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
-        else: 
-            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
-    elif days == 1825: 
-        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
-            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
-        else: 
-            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
-    else: 
-        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
-            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-        else: 
-            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-
 def rmse(y_label, y_pred):
     return tensorflow.sqrt(tensorflow.reduce_mean(tensorflow.square(y_pred - y_label)))
 
@@ -152,7 +129,7 @@ def quick_all():
             h_results = historical_analysis(stock, progress, 3 * len(streamlit.session_state.tracked_stocks), coeff)
             iter += 1
             coeff = int((100 / len(streamlit.session_state.tracked_stocks)) * iter)
-            streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[0][0]:.2f} USD\n{stock} Fundamentals: {f_results[0]:.4f}%\n{stock} Market Sentiment: {(s_results * 100):.4f}%\n{stock} Projected Next Day Close: {h_results:.2f} USD', language = None)
+            streamlit.code(f'{stock} Current Day Close: {get_change_data(stock)['Close'].values[-1][0]:.2f} USD\n{stock} Fundamentals: {f_results[0]:.4f}%\n{stock} Market Sentiment: {(s_results * 100):.4f}%\n{stock} Projected Next Day Close: {h_results:.2f} USD', language = None)
         progress.progress(100)
         progress_struct.empty()
         streamlit.session_state.quick_rerun = True
@@ -214,6 +191,29 @@ if streamlit.sidebar.button('Add to Watchlist'):
 streamlit.sidebar.subheader('Your Watchlist')
 if len(streamlit.session_state.tracked_stocks) == 0: 
     streamlit.sidebar.caption('Your watchlist is empty.')
+
+@streamlit.cache_data
+def get_change_data(ticker): 
+    return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 1), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+
+@streamlit.cache_data
+def get_long_data(ticker, days): 
+    ipo_date = yfinance.Ticker(ticker).history(period = 'max').index[0].to_pydatetime()
+    if days == 99999: 
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1mo', progress = False, auto_adjust = True)
+    elif days == 1825: 
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1wk', progress = False, auto_adjust = True)
+    else: 
+        if ipo_date.replace(tzinfo = None) < datetime.datetime.now() - datetime.timedelta(days = days): 
+            return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = days), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+        else: 
+            return yfinance.download(ticker, start = ipo_date, end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
 
 for stock in streamlit.session_state.tracked_stocks: 
     close_diff = get_change_data(stock)
