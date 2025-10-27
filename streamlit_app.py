@@ -194,12 +194,14 @@ if len(streamlit.session_state.tracked_stocks) == 0:
 
 @streamlit.cache_data
 def get_change_data(ticker): 
-    if datetime.datetime.now().weekday() != 5 and datetime.datetime.now().weekday() != 6: 
+    if datetime.datetime.now().weekday() != 5 and datetime.datetime.now().weekday() != 6 and datetime.datetime.now().weekday() != 0: 
         return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 1), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
     elif datetime.datetime.now().weekday() == 5: 
         return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 2), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
-    else: 
+    elif datetime.datetime.now().weekday() == 6: 
         return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 3), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
+    else: 
+        return yfinance.download(ticker, start = datetime.datetime.now() - datetime.timedelta(days = 4), end = datetime.datetime.now(), interval = '1d', progress = False, auto_adjust = True)
 
 @streamlit.cache_data
 def get_long_data(ticker, days): 
