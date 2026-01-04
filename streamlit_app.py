@@ -278,6 +278,6 @@ for stock in streamlit.session_state.tracked_stocks:
                 if streamlit.button('Quick Analysis', key = 'quick' + stock): 
                     quick(fundamental_check, sentiment_check, historical_check, stock)
                 if streamlit.button('Comprehensive Analysis', key = 'comprehensive' + stock): 
-                    streamlit.warning('sorry this is not a feature yet')
+                    streamlit.warning('Feature in development')
     except Exception: 
         streamlit.error('Something went wrong. Ensure your stock ticker is entered correctly and try reloading the page.')
