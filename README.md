@@ -1,19 +1,5 @@
-# 🎈 Blank app template
+# CrocStocks
 
-A simple Streamlit app template for you to modify!
+CrocStocks is a cutting-edge tool that blends analysis of fundamentals, real-time market sentiment, and LSTM-based price prediction. Ideal for traders, data-driven investors, and financial analysts seeking smarter, faster insights.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
-
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+Website Link: https://crocstocks.streamlit.app/
